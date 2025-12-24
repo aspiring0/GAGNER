@@ -61,15 +61,15 @@ Main components of this repository:
 ### 4.1 Environment
 
 It is recommended to use Python 3.8+ and a virtual environment:
-python -m venv venv
+-`python -m venv venv`
 
 Linux / macOS:
-source venv/bin/activate
+-`source venv/bin/activate`
 
 Windows:
-venv\Scripts\activate
+-`venv\Scripts\activate`
 Install required dependencies (recommended via `re.txt`):
-
+```
 -numpy==1.21.4
 -torch==1.10.0
 -gensim==4.1.2
@@ -79,15 +79,18 @@ Install required dependencies (recommended via `re.txt`):
 -prettytable==2.4.0
 -torch==1.10.0+cu113
 -torchvision==0.11.1+cu113
+```
 Then:
--pip install -r re.txt
+-`pip install -r re.txt`
 
 ### 4.2 Dataset layout
 
 Download the datasets listed in Section 2 and place them under the `data/data` directory, for example:
+```
 data/
 data/
 conll2003/
+```
 The exact subdirectory names and file formats should match what is expected in the corresponding configuration files under `config/`.
 
 ### 4.3 Pretrained BERT
@@ -103,17 +106,19 @@ Example model pages:
 - `bert-base-chinese`: https://huggingface.co/google-bert/bert-base-chinese  
 
 Download all model files (configuration, vocabulary, weights) and save them into:data/<bert-model-name>/
-
+```
 e.g. data/bert-base-uncased/
 data/bert-base-chinese/
-## 5. Usage
-
-### 5.1 Training
+```
+## 5. Training
 
 After preparing datasets and pretrained BERT, train the model with:
-python main.py --config config/genia.json
+
+`python main.py --config config/genia.json`
 You can switch to other datasets by changing the configuration file, for example:
+```
 python main.py --config config/msra.json
 python main.py --config config/conll03.json
 python main.py --config config/weibo.json
+```
 
