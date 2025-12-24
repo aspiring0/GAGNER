@@ -6,27 +6,27 @@ Unified modeling poses a significant challenge for Named Entity Recognition
 
 ## Dataset Information
 - **CoNLL-2003 (English)**: Newswire NER dataset with four entity types (PER, ORG, LOC, MISC).  
-  Original shared task website: https://www.clips.uantwerpen.be/conll2003/ner/.[web:37]
+  Original shared task website: https://www.clips.uantwerpen.be/conll2003/ner/.
 
 - **MSRA (Chinese news)**: Chinese NER dataset released for the SIGHAN 2006 shared task (Levow, 2006).  
   Available from the original organizers and licensed mirrors that distribute the SIGHAN 2006 datasets.
 
 - **Resume (Chinese)**: NER dataset of Chinese resumes (Zhang and Yang, 2018).  
-  Public release: https://github.com/jiesutd/ChineseNER.[web:42]
+  Public release: https://github.com/jiesutd/ChineseNER.
 
 - **Weibo (Chinese social media)**: NER dataset constructed from Sina Weibo posts (Peng and Dredze, 2015).  
-  Public release: https://github.com/hltcoe/golden-horse; mirrored at OpenDataLab: https://opendatalab.com/OpenDataLab/Weibo_NER.[web:42][web:50]
+  Public release: https://github.com/hltcoe/golden-horse; mirrored at OpenDataLab: https://opendatalab.com/OpenDataLab/Weibo_NER.
 
 - **OntoNotes 4.0 / 5.0**: Large multi-genre corpora with entity annotations (Weischedel et al., 2011; Pradhan et al., 2013).  
   Distributed by the Linguistic Data Consortium:  
   - OntoNotes 4.0: LDC2011T03 (https://catalog.ldc.upenn.edu/LDC2011T03)  
-  - OntoNotes 5.0: LDC2013T19 (https://catalog.ldc.upenn.edu/LDC2013T19, DOI: https://doi.org/10.35111/xmhb-2b84).[web:51][web:52]
+  - OntoNotes 5.0: LDC2013T19 (https://catalog.ldc.upenn.edu/LDC2013T19, DOI: https://doi.org/10.35111/xmhb-2b84).
 
 - **GENIA (English biomedical)**: Corpus of MEDLINE abstracts annotated with biological entities (Kim et al., 2003).  
-  Project website: http://www.geniaproject.org/.[web:45]
+  Project website: http://www.geniaproject.org/.
 
 - **CADEC (English medical forum)**: CSIRO Adverse Drug Event Corpus (Karimi et al., 2015).  
-  Data portal: https://researchdata.edu.au/cadec/3378330.[web:46]
+  Data portal: https://researchdata.edu.au/cadec/3378330.
 
 
 Please refer to the original sources and licenses of each dataset before use.
@@ -45,8 +45,17 @@ The main components are:
 3. Place the datasets under the `data/data` directory with the following structure:
    - `data/data/conll2003/`
    - `data/data/msra/`
+4. Download pre-trained BERT model
 
-4. Install the required dependencies:
+This project requires a local copy of the pre-trained BERT model used as the encoder (e.g., `bert-base-uncased` or `bert-base-chinese`)
+If your environment does **not** have internet access (or you want to fix the exact version used in our experiments), please download the model manually and place it under the `data/` directory:
+
+Go to the Hugging Face model page, for example:  
+   - `bert-base-uncased`: https://huggingface.co/google-bert/bert-base-uncased  
+   - `bert-base-chinese`: https://huggingface.co/google-bert/bert-base-chinese
+Download all model files (configuration, vocabulary, and weights) and save them into a folder:
+data/<bert-model-name>/
+5. Install the required dependencies:
 ```
 -numpy==1.21.4
 -torch==1.10.0
@@ -58,5 +67,5 @@ The main components are:
 -torch==1.10.0+cu113 torchvision==0.11.1+cu113
 ```
 
-5. Train the model
-python main.py --config config/genia.json
+6. Train the model
+-python main.py --config config/genia.json
