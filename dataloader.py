@@ -118,8 +118,24 @@ def split_gaz(gaz):
 
 
 def process_bert(data, tokenizer, vocab):
+    """
+    Process BERT input data, converting raw text data into feature representations suitable for model training.
+    
+    Parameters:
+        data: List containing raw text data, each instance includes 'sentence' and 'ner' fields
+        tokenizer: BERT tokenizer, used to convert text to token IDs
+        vocab: Vocabulary object, used to convert labels to IDs
+    
+    Returns:
+        bert_inputs: List of BERT input token IDs
+        grid_labels: Entity relationship grid labels
+        grid_mask2d: 2D grid masks
+        pieces2word: Token to word mapping relationships
+        dist_inputs: Word distance features
+        sent_length: List of sentence lengths
+        entity_text: Entity text collections
+    """
     bert_inputs = []
-    # 此处我们不再直接用 gazs_list 保存原数据，而先保存在 gaz_sequence_list 中
     gazs_list = []
     grid_labels = []
     grid_mask2d = []
