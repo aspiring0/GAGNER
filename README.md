@@ -23,7 +23,7 @@ Please refer to the original sources and licenses of each dataset before use.
 
 - **Resume (Chinese)**  
   Chinese resume NER dataset (Zhang and Yang, 2018).  
-  Repo: https://github.com/jiesutd/ChineseNER
+  Repo: https://github.com/aspiring0/GAGNER/tree/main/data/data/resume-zh
 
 - **Weibo (Chinese social media)**  
   NER dataset from Sina Weibo posts (Peng and Dredze, 2015).  
@@ -38,15 +38,75 @@ Please refer to the original sources and licenses of each dataset before use.
 
 - **GENIA (English biomedical)**  
   MEDLINE abstracts with biological entity annotations (Kim et al., 2003).  
-  Website: http://www.geniaproject.org/
+  Website: https://github.com/aspiring0/GAGNER/tree/main/data/data/genia
 
 - **CADEC (English medical forum)**  
   CSIRO Adverse Drug Event Corpus (Karimi et al., 2015).  
   Data portal: https://researchdata.edu.au/cadec/3378330
 
 
+## 3. Data Preprocessing
+This step does not require executing arbitrary code.
 
-## 3. Project Structure
+The exact subdirectory names and file formats should match what is expected in the corresponding configuration files under `config/`.
+This repository follows the W2NER-style grid formulation. Data processing is implemented in `dataloader.py` and is performed on-the-fly when building PyTorch `Dataset`s. The pipeline assumes each dataset split is stored as JSON:
+
+- `./data/data/<dataset>/train.json`
+- `./data/data/<dataset>/dev.json`
+- `./data/data/<dataset>/test.json`
+
+Each JSON instance should contain:
+- `sentence`: a list of tokens/words (length = N)
+- `ner`: a list of entities, where each entity includes:
+- `index`: a list of token indices (supports multi-token and discontinuous spans)
+- `type`: the entity label string
+
+### 3.1: Build label vocabulary
+
+`fill_vocab(vocab, dataset)` collects all entity types from the dataset and builds a label-to-id mapping. Two special labels are reserved:
+- PAD label id = 0
+- SUC label id = 1
+
+### 3.2: BERT tokenization and piece-to-word alignment
+
+For each input sentence:
+1. Each word is tokenized into WordPiece tokens using a Hugging Face tokenizer (`AutoTokenizer`).
+2. All pieces are concatenated and converted into token ids.
+3. Special tokens `[CLS]` and `[SEP]` are added.
+4. A boolean matrix `pieces2word` of shape `(N, P)` is built to map each original word (N) to its corresponding piece positions (P), offset by 1 because of `[CLS]`.
+
+### 3.3: Construct grid labels and masks
+
+For each sentence of length N:
+- `grid_labels`: an integer matrix of shape `(N, N)` initialized to 0.
+- `grid_mask2d`: a boolean matrix of shape `(N, N)` initialized to True (all valid positions).
+
+For each entity with token index list `idx = [i1, i2, ..., ik]`:
+- For each adjacent pair, assign a link label:
+  - `grid_labels[idx[t], idx[t+1]] = 1` (SUC)
+- Assign the entity type label to the “tail-to-head” position:
+  - `grid_labels[idx[-1], idx[0]] = label_id(entity_type)`
+
+Additionally, `entity_text` stores a set representation of gold entities for evaluation.
+
+### 3.4: Relative distance features
+
+`dist_inputs` is an integer matrix of shape `(N, N)` that encodes relative distances between token positions. Distances are bucketed using the `dis2idx` mapping and shifted to distinguish direction, and zero-distance is mapped to a dedicated value.
+
+### 3.5: Build PyTorch datasets and batching
+
+`load_data_bert(config)` loads JSON splits, constructs the `Vocabulary`, and creates:
+- `RelationDataset` for train/dev/test, each item returning:
+  - `bert_inputs` (piece ids)
+  - `grid_labels`
+  - `grid_mask2d`
+  - `pieces2word`
+  - `dist_inputs`
+  - `sent_length`
+  - `entity_text`
+
+The `collate_fn` pads variable-length sequences and matrices to batch-level maximum sizes using `pad_sequence` and manual tensor filling.
+## 4. Project Structure
 
 Main components of this repository:
 
@@ -56,9 +116,9 @@ Main components of this repository:
 - `config/`: Configuration files (e.g., hyperparameters, dataset paths, model settings).  
 - `utils.py`: Utility functions and evaluation metrics (accuracy, precision, recall, F1, etc.).
 
-## 4. Setup
+## 5. Setup
 
-### 4.1 Environment
+### 5.1 Environment
 
 It is recommended to use Python 3.8+ and a virtual environment:
 -`python -m venv venv`
@@ -83,17 +143,8 @@ Install required dependencies (recommended via `re.txt`):
 Then:
 -`pip install -r re.txt`
 
-### 4.2 Dataset layout
 
-Download the datasets listed in Section 2 and place them under the `data/data` directory, for example:
-```
-data/
-data/
-conll2003/
-```
-The exact subdirectory names and file formats should match what is expected in the corresponding configuration files under `config/`.
-
-### 4.3 Pretrained BERT
+### 5.2 Pretrained BERT
 
 This project uses a pretrained BERT encoder, such as `bert-base-uncased` or `bert-base-chinese`.
 
@@ -110,7 +161,7 @@ Download all model files (configuration, vocabulary, weights) and save them into
 e.g. data/bert-base-uncased/
 data/bert-base-chinese/
 ```
-## 5. Training
+## 6. Training
 
 After preparing datasets and pretrained BERT, train the model with:
 
