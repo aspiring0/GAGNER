@@ -261,13 +261,7 @@ def load_data_bert(config):
 
     tokenizer = AutoTokenizer.from_pretrained(config.bert_name, cache_dir="./cache/")
 
-    # build_gaz_file(gaz,r"/root/autodl-fs/sgns.merge.word")
-    # build_gaz_file(gaz, r"./data/embed/sgns.merge.word")
-    # read_instance(train_data, gaz, gaz_alphabet)
-    # read_instance(dev_data, gaz, gaz_alphabet)
-    # read_instance(test_data, gaz, gaz_alphabet)
-    # config.gaz_emb_size = gaz_alphabet.size()
-    # print(config.gaz_emb_size)
+  
     vocab = Vocabulary()
 
     train_ent_num = fill_vocab(vocab, train_data)

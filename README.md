@@ -23,7 +23,7 @@ Please refer to the original sources and licenses of each dataset before use.
 
 - **Resume (Chinese)**  
   Chinese resume NER dataset (Zhang and Yang, 2018).  
-  Repo: https://github.com/aspiring0/GAGNER/tree/main/data/data/resume-zh
+  Repo: https://github.com/jiesutd/LatticeLSTM/tree/master/data
 
 - **Weibo (Chinese social media)**  
   NER dataset from Sina Weibo posts (Peng and Dredze, 2015).  
@@ -38,7 +38,7 @@ Please refer to the original sources and licenses of each dataset before use.
 
 - **GENIA (English biomedical)**  
   MEDLINE abstracts with biological entity annotations (Kim et al., 2003).  
-  Website: https://github.com/aspiring0/GAGNER/tree/main/data/data/genia
+  Website: https://service.tib.eu/ldmservice/dataset/genia
 
 - **CADEC (English medical forum)**  
   CSIRO Adverse Drug Event Corpus (Karimi et al., 2015).  
@@ -116,7 +116,7 @@ Main components of this repository:
 - `config/`: Configuration files (e.g., hyperparameters, dataset paths, model settings).  
 - `utils.py`: Utility functions and evaluation metrics (accuracy, precision, recall, F1, etc.).
 
-## 5. Setup
+## 5. Usage
 
 ### 5.1 Environment
 
@@ -161,7 +161,7 @@ Download all model files (configuration, vocabulary, weights) and save them into
 e.g. data/bert-base-uncased/
 data/bert-base-chinese/
 ```
-## 6. Training
+## 5.3 Train and evaluate
 
 After preparing datasets and pretrained BERT, train the model with:
 
@@ -172,4 +172,9 @@ python main.py --config config/msra.json
 python main.py --config config/conll03.json
 python main.py --config config/weibo.json
 ```
+This script trains the model, evaluates it on the dev/test sets each epoch, saves the best checkpoint, and finally runs prediction on the test set.
 
+### 5.4 Outputs
+- The best checkpoint is saved to the path specified by `save_path` in the config file.
+- The final prediction file is written to `predict_path` (JSON) specified in the config file.
+- Training/dev/test metrics (Precision/Recall/F1) are printed to the console logs.
